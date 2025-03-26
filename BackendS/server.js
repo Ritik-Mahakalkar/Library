@@ -9,7 +9,7 @@ app.use(cors());
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "123456789",  // Replace with your MySQL password
+    password: "123456789",  
     database: "Ritik"
 });
 
@@ -21,7 +21,7 @@ db.connect(err => {
     console.log("MySQL Connected...");
 });
 
-//  Add a New Member
+//   new Member
 app.post("/members", (req, res) => {
     const { name, email, phone, join_date } = req.body;
     const sql = "INSERT INTO Members (name, email, phone, join_date) VALUES (?, ?, ?, ?)";
@@ -34,7 +34,7 @@ app.post("/members", (req, res) => {
         res.send({ message: "Member added successfully", memberId: result.insertId });
     });
 });
-//  Get All Members
+//   all Members
 app.get("/members", (req, res) => {
     const sql = "SELECT * FROM Members";
     db.query(sql, (err, results) => {
@@ -46,7 +46,7 @@ app.get("/members", (req, res) => {
     });
 });
 
-//  Add a New Book
+// New Book
 app.post("/books", (req, res) => {
     const { title, author_id } = req.body;
 
@@ -71,7 +71,7 @@ app.post("/books", (req, res) => {
         });
     });
 });
-//  Get All Books
+//   all Books
 app.get("/books", (req, res) => {
     const sql = "SELECT * FROM Books";
     db.query(sql, (err, results) => {
@@ -82,11 +82,11 @@ app.get("/books", (req, res) => {
         res.send(results);
     });
 });
-//  Issue a Book to a Member
+//  issue Book 
 app.post("/issue", (req, res) => {
     const { book_id, member_id } = req.body;
 
-    // Check if the book exists and is available
+    
     const checkBookQuery = "SELECT available FROM Books WHERE book_id = ?";
     db.query(checkBookQuery, [book_id], (err, bookResults) => {
         if (err) {
@@ -102,7 +102,7 @@ app.post("/issue", (req, res) => {
             return res.status(400).send({ message: "Book is not available" });
         }
 
-        // Check if the member exists
+      
         const checkMemberQuery = "SELECT * FROM Members WHERE member_id = ?";
         db.query(checkMemberQuery, [member_id], (err, memberResults) => {
             if (err) {
@@ -114,7 +114,7 @@ app.post("/issue", (req, res) => {
                 return res.status(400).send({ message: "Member ID does not exist" });
             }
 
-            // Issue the book
+            // issue book
             const issueBookQuery = "INSERT INTO BorrowedBooks (book_id, member_id, issue_date) VALUES (?, ?, CURDATE())";
             db.query(issueBookQuery, [book_id, member_id], (err, result) => {
                 if (err) {
@@ -122,7 +122,7 @@ app.post("/issue", (req, res) => {
                     return res.status(500).send(err);
                 }
 
-                // Update book status to unavailable
+                // Update book  unavailable
                 const updateBookStatusQuery = "UPDATE Books SET available = FALSE WHERE book_id = ?";
                 db.query(updateBookStatusQuery, [book_id], (err) => {
                     if (err) {
@@ -137,7 +137,7 @@ app.post("/issue", (req, res) => {
     });
 });
 
-//  Get All Issued Books
+//   all issued Books
 app.get("/issued-books", (req, res) => {
     const sql = `
         SELECT bb.borrow_id, b.title, m.name AS member_name, bb.issue_date, bb.return_date
@@ -154,7 +154,7 @@ app.get("/issued-books", (req, res) => {
     });
 });
 
-// 3️⃣ Return a Book
+//  return a Book
 app.post("/return", (req, res) => {
     const { borrow_id } = req.body;
 
@@ -181,7 +181,7 @@ app.post("/return", (req, res) => {
     });
 });
 
-// Start the Server
+
 app.listen(4000, () => {
     console.log("Server running on port 4000...");
 });
